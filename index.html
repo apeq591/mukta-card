@@ -29,7 +29,7 @@
   .kick { font-family:'Space Mono', monospace; font-size:11px; letter-spacing:.2em; color:var(--accent); }
   .name { font-weight:700; font-size:40px; line-height:1.0; letter-spacing:-.02em; margin-top:14px; }
   .rule { width:42px; height:3px; background:var(--accent); border-radius:2px; margin:18px 0; }
-  .role { font-size:14.5px; line-height:1.5; color:rgba(244,244,242,.72); max-width:250px; }
+  .role { font-size:14.5px; line-height:1.5; color:rgba(244,244,242,.72); max-width:250px; margin-top:6px; }
   .work { font-weight:600; font-size:19px; margin-top:9px; letter-spacing:-.01em; }
   .work span { color:var(--accent); margin:0 8px; }
   .contact { margin-top:auto; font-family:'Space Mono', monospace; font-size:12.5px; line-height:1.7; }
@@ -39,6 +39,8 @@
   .right { width:194px; padding:24px; border-left:1px solid var(--line);
     background:rgba(255,255,255,.015);
     display:flex; flex-direction:column; align-items:center; justify-content:center; gap:13px; }
+  .brand { font-family:'Space Grotesk', sans-serif; font-weight:700; font-size:16px; letter-spacing:-.01em; color:var(--ink); }
+  .brand span { color:var(--accent); }
   .qr { width:124px; height:124px; background:#fff; border-radius:10px; padding:8px; border:0; cursor:pointer; }
   .qr img { width:100%; height:100%; display:block; }
   .scan { font-family:'Space Mono', monospace; font-size:10.5px; letter-spacing:.06em; text-align:center; color:var(--mute); }
@@ -74,16 +76,18 @@
 
   <div class="card">
     <div class="left">
-      <span class="kick">PATENTS PENDING &middot; INVENTOR</span>
+      <span class="kick">INVENTOR</span>
       <h1 class="name">Mukta Dhandge</h1>
       <div class="rule"></div>
       <div class="work">ResQify <span>/</span> MediQ</div>
+      <p class="role">Patents pending</p>
       <div class="contact">
         <div class="em">mukta.dhandge@icloud.com</div>
         <div class="loc">Glasgow, UK</div>
       </div>
     </div>
     <div class="right">
+      <div class="brand">Ape<span>Q</span></div>
       <button class="qr" onclick="document.getElementById('qrFull').style.display='flex'" aria-label="Enlarge QR code">
         <img src="assets/qr-card.png" alt="QR code to Mukta Dhandge's card" />
       </button>
