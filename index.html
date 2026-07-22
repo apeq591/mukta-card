@@ -65,18 +65,22 @@
   .hint b { color:var(--accent); font-weight:700; }
   .hint.done { opacity:0; }
 
-  /* Turn cue: one giant thin grey arrow, drifting right — the way you push the card */
-  .spin360 { width:420px; margin-bottom:20px; pointer-events:none; transition:opacity .35s ease; }
-  .spin360 svg { width:100%; height:auto; display:block;
-    animation:drift 2.4s cubic-bezier(.42,0,.3,1) infinite; }
+  /* Turn cue: a giant arrow that SWINGS around a circle — the motion of turning the card.
+     The arc bows inward (toward the card) and the whole group rotates about the circle's
+     centre at (210,-60), so the arrow actually travels along its own curve. */
+  .spin360 { width:540px; margin-bottom:14px; pointer-events:none; transition:opacity .35s ease; }
+  .spin360 svg { width:100%; height:auto; display:block; overflow:visible; }
+  .spin360 g { transform-box:view-box; transform-origin:210px -167.5px;
+    animation:swing 2.8s cubic-bezier(.35,0,.3,1) infinite; }
   .spin360.done { opacity:0; }
-  @keyframes drift {
-    0%   { transform:translateX(-34px); opacity:.15; }
-    45%  { opacity:.62; }
-    100% { transform:translateX(34px);  opacity:.05; }
+  @keyframes swing {
+    0%   { transform:rotate(-15deg); opacity:0; }
+    22%  { opacity:.55; }
+    70%  { opacity:.48; }
+    100% { transform:rotate(15deg);  opacity:0; }
   }
-  @media (prefers-reduced-motion:reduce){ .spin360 svg { animation:none; opacity:.4; } }
-  @media (max-width:580px){ .spin360 { width:360px; } }
+  @media (prefers-reduced-motion:reduce){ .spin360 g { animation:none; opacity:.45; } }
+  @media (max-width:580px){ .spin360 { width:454px; } }
 
   /* Full-screen QR so she can show just the code */
   .qr-full { display:none; position:fixed; inset:0; z-index:50; background:var(--bg); cursor:pointer;
@@ -103,13 +107,16 @@
 <body>
   <!-- turn cue: giant arrow pointing the way to push; vanishes the moment you touch the card -->
   <div class="spin360 noprint" id="spin360">
-    <svg viewBox="0 0 420 80" fill="none" aria-hidden="true">
-      <!-- curved shaft: the path the card travels as it turns -->
-      <path d="M14 54 C130 4, 290 4, 396 50" stroke="#F4F4F2" stroke-width="2.5"
-            stroke-linecap="round"/>
-      <!-- head, angled along the curve's tangent so it looks like it's sweeping round -->
-      <path d="M359 49 L396 50 L370 24" stroke="#F4F4F2" stroke-width="2.5"
-            stroke-linecap="round" stroke-linejoin="round"/>
+    <svg viewBox="0 0 420 104" fill="none" aria-hidden="true">
+      <g>
+        <!-- arc of a circle centred at (210,-167.5), r=260 — bows inward, toward the card,
+             and spans the card's full width -->
+        <path d="M20 10 A260 260 0 0 0 400 10" stroke="#F4F4F2" stroke-width="2.5"
+              stroke-linecap="round"/>
+        <!-- head on the leading end, aimed along the circle's tangent -->
+        <path d="M387 44.5 L400 10 L366.6 25.3" stroke="#F4F4F2" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
     </svg>
   </div>
 
