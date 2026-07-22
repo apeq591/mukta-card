@@ -68,23 +68,24 @@
   /* Turn cue: a giant arrow that SWINGS around a circle — the motion of turning the card.
      The arc bows inward (toward the card) and the whole group rotates about the circle's
      centre at (210,-60), so the arrow actually travels along its own curve. */
-  /* Turn cue: a stretched oval — an orbit. A light runs round the loop clockwise, which at
-     the top reads as travelling right: the same motion as turning the card. Measured
-     circumference is 411, so the offset runs 0 → -411 for one seamless lap. */
-  .spin360 { width:232px; margin-bottom:20px; pointer-events:none; transition:opacity .35s ease; }
+  /* Turn cue: a stretched OPEN oval spanning the card, with a gap on the right where the
+     arrowhead sits. A light laps the loop clockwise — at the top that reads as travelling
+     right, the way you drag. Measured path length is 1037, so the offset runs 0 → -1037. */
+  .spin360 { width:540px; margin-bottom:18px; pointer-events:none; transition:opacity .35s ease; }
   .spin360 svg { width:100%; height:auto; display:block; }
-  .spin360 .track { stroke:rgba(244,244,242,.16); }
-  .spin360 .comet { stroke:rgba(244,244,242,.66); stroke-dasharray:78 420;
-    animation:orbit 2.4s linear infinite; }
+  .spin360 .track { stroke:rgba(244,244,242,.15); }
+  .spin360 .comet { stroke:rgba(244,244,242,.66); stroke-dasharray:160 900;
+    animation:orbit 2.9s linear infinite; }
+  .spin360 .head  { stroke:rgba(244,244,242,.5); }
   .spin360.done { opacity:0; }
   @keyframes orbit {
     0%   { stroke-dashoffset:0; }
-    100% { stroke-dashoffset:-411; }
+    100% { stroke-dashoffset:-1037; }
   }
   @media (prefers-reduced-motion:reduce){
     .spin360 .comet { animation:none; stroke-dasharray:none; stroke:rgba(244,244,242,.4); }
   }
-  @media (max-width:580px){ .spin360 { width:200px; } }
+  @media (max-width:580px){ .spin360 { width:454px; } }
 
   /* Full-screen QR so she can show just the code */
   .qr-full { display:none; position:fixed; inset:0; z-index:50; background:var(--bg); cursor:pointer;
@@ -111,12 +112,16 @@
 <body>
   <!-- turn cue: giant arrow pointing the way to push; vanishes the moment you touch the card -->
   <div class="spin360 noprint" id="spin360">
-    <svg viewBox="0 0 220 60" fill="none" aria-hidden="true">
-      <!-- the stretched oval -->
-      <ellipse class="track" cx="110" cy="30" rx="96" ry="24" stroke-width="2"/>
-      <!-- light running round it -->
-      <ellipse class="comet" cx="110" cy="30" rx="96" ry="24" stroke-width="2"
-               stroke-linecap="round"/>
+    <svg viewBox="0 0 540 80" fill="none" aria-hidden="true">
+      <!-- stretched oval, centre (270,40) rx264 ry30, drawn clockwise from 20° round to
+           340° — leaving a gap on the right for the arrowhead -->
+      <path class="track" d="M518.1 50.3 A264 30 0 1 1 518.1 29.7"
+            stroke-width="2" stroke-linecap="round"/>
+      <path class="comet" d="M518.1 50.3 A264 30 0 1 1 518.1 29.7"
+            stroke-width="2" stroke-linecap="round"/>
+      <!-- arrowhead in the gap, aimed along the oval's tangent, continuing the lap -->
+      <path class="head" d="M490 32.5 L518.1 29.7 L496.6 11.5"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
   </div>
 
