@@ -59,7 +59,8 @@
   .backline { font-family:'Space Mono', monospace; font-size:10.5px; letter-spacing:.22em;
     color:rgba(244,244,242,.34); }
 
-  .hint { margin-top:26px; font-family:'Space Mono', monospace; font-size:11.5px;
+  /* clears the turntable ring, which overflows ~58px below the card */
+  .hint { margin-top:84px; font-family:'Space Mono', monospace; font-size:11.5px;
     letter-spacing:.08em; color:var(--mute); text-align:center;
     transition:opacity .6s ease; }
   .hint b { color:var(--accent); font-weight:700; }
@@ -68,24 +69,28 @@
   /* Turn cue: a giant arrow that SWINGS around a circle — the motion of turning the card.
      The arc bows inward (toward the card) and the whole group rotates about the circle's
      centre at (210,-60), so the arrow actually travels along its own curve. */
-  /* Turn cue: a stretched OPEN oval spanning the card, with a gap on the right where the
-     arrowhead sits. A light laps the loop clockwise — at the top that reads as travelling
-     right, the way you drag. Measured path length is 1037, so the offset runs 0 → -1037. */
-  .spin360 { width:540px; margin-bottom:18px; pointer-events:none; transition:opacity .35s ease; }
-  .spin360 svg { width:100%; height:auto; display:block; }
-  .spin360 .track { stroke:rgba(244,244,242,.15); }
-  .spin360 .comet { stroke:rgba(244,244,242,.66); stroke-dasharray:160 900;
-    animation:orbit 2.9s linear infinite; }
-  .spin360 .head  { stroke:rgba(244,244,242,.5); }
-  .spin360.done { opacity:0; }
+  /* Turn cue: a turntable the card stands on. The ring's far half is hidden behind the card,
+     so it reads as a real ring in 3D rather than a diagram floating nearby. A light laps it;
+     at the near edge it travels right — the way you drag. Path length measured at runtime. */
+  .stage { position:relative; display:flex; flex-direction:column; align-items:center; }
+  .scene { position:relative; z-index:2; }
+  .ring { position:absolute; z-index:1; left:50%; margin-left:-320px; top:calc(100% - 60px);
+    width:640px; pointer-events:none; transition:opacity .4s ease; }
+  .ring svg { width:100%; height:auto; display:block; overflow:visible; }
+  .ring .track { stroke:rgba(244,244,242,.13); }
+  /* --len is set from the real measured path length at load, so the lap is seamless */
+  .ring .comet { stroke:rgba(244,244,242,.62); stroke-dasharray:var(--seg) var(--gap);
+    animation:orbit 3.2s linear infinite; }
   @keyframes orbit {
-    0%   { stroke-dashoffset:0; }
-    100% { stroke-dashoffset:-1037; }
+    from { stroke-dashoffset:0; }
+    to   { stroke-dashoffset:var(--len); }
   }
+  .ring .head  { stroke:rgba(244,244,242,.42); }
+  .ring.done { opacity:0; }
   @media (prefers-reduced-motion:reduce){
-    .spin360 .comet { animation:none; stroke-dasharray:none; stroke:rgba(244,244,242,.4); }
+    .ring .comet { animation:none; stroke-dasharray:none; stroke:rgba(244,244,242,.34); }
   }
-  @media (max-width:580px){ .spin360 { width:454px; } }
+  @media (max-width:580px){ .ring { width:540px; margin-left:-270px; } }
 
   /* Full-screen QR so she can show just the code */
   .qr-full { display:none; position:fixed; inset:0; z-index:50; background:var(--bg); cursor:pointer;
@@ -110,18 +115,17 @@
 </style>
 </head>
 <body>
-  <!-- turn cue: giant arrow pointing the way to push; vanishes the moment you touch the card -->
-  <div class="spin360 noprint" id="spin360">
-    <svg viewBox="0 0 540 80" fill="none" aria-hidden="true">
-      <!-- stretched oval, centre (270,40) rx264 ry30, drawn clockwise from 20° round to
-           340° — leaving a gap on the right for the arrowhead -->
-      <path class="track" d="M518.1 50.3 A264 30 0 1 1 518.1 29.7"
-            stroke-width="2" stroke-linecap="round"/>
-      <path class="comet" d="M518.1 50.3 A264 30 0 1 1 518.1 29.7"
-            stroke-width="2" stroke-linecap="round"/>
-      <!-- arrowhead in the gap, aimed along the oval's tangent, continuing the lap -->
-      <path class="head" d="M490 32.5 L518.1 29.7 L496.6 11.5"
-            stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <div class="stage">
+
+  <!-- turn cue: the turntable ring the card stands on. Its far half sits behind the card. -->
+  <div class="ring noprint" id="spin360">
+    <svg viewBox="0 0 640 120" fill="none" aria-hidden="true">
+      <ellipse class="track" cx="320" cy="60" rx="300" ry="44" stroke-width="1.5"/>
+      <ellipse class="comet" cx="320" cy="60" rx="300" ry="44" stroke-width="1.5"
+               stroke-linecap="round"/>
+      <!-- chevron on the near edge, pointing the way the front of the card travels -->
+      <path class="head" d="M302 114 L320 104 L302 94" stroke-width="1.5"
+            stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
   </div>
 
@@ -188,6 +192,7 @@
 
     </div>
   </div>
+  </div>
 
   <p class="hint noprint" id="hint"><b>tap</b> or <b>drag</b> to turn the card</p>
 
@@ -248,6 +253,16 @@
     lastTouch = Date.now();
     up();
   }, { passive: false });
+
+  // Measure the ring for real — an ellipse perimeter formula is close but not exact, and a
+  // few pixels out makes the light stutter once every lap.
+  var comet = document.querySelector('.ring .comet');
+  if (comet) {
+    var L = comet.getTotalLength();
+    comet.style.setProperty('--seg', (L * 0.13).toFixed(1));
+    comet.style.setProperty('--gap', (L * 0.87).toFixed(1));
+    comet.style.setProperty('--len', L.toFixed(1));   // sign sets the direction of travel
+  }
 
   // QR opens fullscreen instead of flipping the card
   qrBtn.addEventListener('click', function (e) { e.stopPropagation(); qrFull.style.display = 'flex'; });
