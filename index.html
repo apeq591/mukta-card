@@ -103,9 +103,12 @@
 <body>
   <!-- turn cue: giant arrow pointing the way to push; vanishes the moment you touch the card -->
   <div class="spin360 noprint" id="spin360">
-    <svg viewBox="0 0 420 76" fill="none" aria-hidden="true">
-      <path d="M10 38 H372" stroke="#F4F4F2" stroke-width="2.5" stroke-linecap="round"/>
-      <path d="M338 10 L392 38 L338 66" stroke="#F4F4F2" stroke-width="2.5"
+    <svg viewBox="0 0 420 80" fill="none" aria-hidden="true">
+      <!-- curved shaft: the path the card travels as it turns -->
+      <path d="M14 54 C130 4, 290 4, 396 50" stroke="#F4F4F2" stroke-width="2.5"
+            stroke-linecap="round"/>
+      <!-- head, angled along the curve's tangent so it looks like it's sweeping round -->
+      <path d="M359 49 L396 50 L370 24" stroke="#F4F4F2" stroke-width="2.5"
             stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
   </div>
