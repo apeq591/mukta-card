@@ -65,6 +65,21 @@
   .hint b { color:var(--accent); font-weight:700; }
   .hint.done { opacity:0; }
 
+  /* 360 badge — the Amazon-style "this thing turns" cue */
+  .spin360 { position:absolute; left:14px; bottom:12px; display:flex; align-items:center; gap:6px;
+    padding:5px 9px 5px 6px; border-radius:999px; background:rgba(244,244,242,.06);
+    border:1px solid var(--line); pointer-events:none; transition:opacity .5s ease; }
+  .spin360 svg { width:15px; height:15px; display:block; animation:nudge 2.6s ease-in-out infinite; }
+  .spin360 span { font-family:'Space Mono', monospace; font-size:9.5px; letter-spacing:.12em;
+    color:rgba(244,244,242,.62); }
+  .spin360.done { opacity:0; }
+  @keyframes nudge {
+    0%,62%,100% { transform:rotate(0deg); }
+    76%         { transform:rotate(-38deg); }
+    90%         { transform:rotate(14deg); }
+  }
+  @media (prefers-reduced-motion:reduce){ .spin360 svg { animation:none; } }
+
   /* Full-screen QR so she can show just the code */
   .qr-full { display:none; position:fixed; inset:0; z-index:50; background:var(--bg); cursor:pointer;
     flex-direction:column; align-items:center; justify-content:center; gap:24px; padding:24px; }
@@ -123,6 +138,17 @@
           </button>
           <p class="scan"><b>SCAN</b> // my card</p>
         </div>
+
+        <!-- turn cue: circular arrow + 360, fades once the card has been turned -->
+        <div class="spin360 noprint" id="spin360">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M20.5 12a8.5 8.5 0 1 1-2.7-6.2" stroke="#FF6A2C" stroke-width="2.2"
+                  stroke-linecap="round"/>
+            <path d="M20.6 3.6v4.6h-4.6" stroke="#FF6A2C" stroke-width="2.2"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>360</span>
+        </div>
       </div>
 
       <!-- BACK -->
@@ -164,13 +190,16 @@
   var qrBtn = document.getElementById('qrBtn');
   var qrFull = document.getElementById('qrFull');
   var hint = document.getElementById('hint');
+  var spin = document.getElementById('spin360');
 
   var rot = 0;          // current rotation in degrees
-  var startX = 0, startRot = 0, dragging = false, moved = 0;
+  var startX = 0, startRot = 0, dragging = false, moved = 0, lastTouch = 0;
 
   function apply() { card.style.transform = 'rotateY(' + rot + 'deg)'; }
 
   function down(e) {
+    // ignore the phantom mouse event a touchscreen fires just after a real tap
+    if (e.type === 'mousedown' && Date.now() - lastTouch < 700) return;
     dragging = true; moved = 0;
     startX = (e.touches ? e.touches[0].clientX : e.clientX);
     startRot = rot;
@@ -192,6 +221,7 @@
     else { rot = Math.round(rot / 180) * 180; }       // a drag settles on the nearest face
     apply();
     hint.classList.add('done');                       // once you know, the label goes away
+    spin.classList.add('done');
   }
 
   card.addEventListener('mousedown', down);
@@ -199,7 +229,13 @@
   window.addEventListener('mouseup', up);
   card.addEventListener('touchstart', down, { passive: true });
   card.addEventListener('touchmove', move, { passive: true });
-  card.addEventListener('touchend', up);
+  // A touch also makes the browser synthesise a phantom mouse click ~300ms later.
+  // Without this the card would turn twice per tap (180 + 180 = a full 360).
+  card.addEventListener('touchend', function (e) {
+    e.preventDefault();
+    lastTouch = Date.now();
+    up();
+  }, { passive: false });
 
   // QR opens fullscreen instead of flipping the card
   qrBtn.addEventListener('click', function (e) { e.stopPropagation(); qrFull.style.display = 'flex'; });
