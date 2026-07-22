@@ -74,6 +74,17 @@
      at the near edge it travels right — the way you drag. Path length measured at runtime. */
   .stage { position:relative; display:flex; flex-direction:column; align-items:center; }
   .scene { position:relative; z-index:2; }
+  /* On load the card turns itself a little, four times, then stops for good. Nothing
+     communicates "this is a 3D thing you can move" like seeing it move. The turntable ring
+     stays put underneath — the card turns ON it. */
+  .nudger { transform-style:preserve-3d; animation:nudge 2.8s ease-in-out .9s 4 both; }
+  .nudger.stop { animation:none; }
+  @keyframes nudge {
+    0%, 6%     { transform:rotateY(0deg); }
+    30%        { transform:rotateY(15deg); }
+    58%, 100%  { transform:rotateY(0deg); }
+  }
+  @media (prefers-reduced-motion:reduce){ .nudger { animation:none; } }
   .ring { position:absolute; z-index:1; left:50%; margin-left:-320px; top:calc(100% - 60px);
     width:640px; pointer-events:none; transition:opacity .4s ease; }
   .ring svg { width:100%; height:auto; display:block; overflow:visible; }
@@ -159,6 +170,7 @@
   </div>
 
   <div class="scene">
+   <div class="nudger" id="nudger">
     <div class="card3d" id="card3d">
 
       <!-- FRONT -->
@@ -220,6 +232,7 @@
       </div>
 
     </div>
+   </div>
   </div>
   </div>
 
@@ -237,6 +250,7 @@
   var qrFull = document.getElementById('qrFull');
   var hint = document.getElementById('hint');
   var spin = document.getElementById('spin360');
+  var nudger = document.getElementById('nudger');
 
   var rot = 0;          // current rotation in degrees
   var startX = 0, startRot = 0, dragging = false, moved = 0, lastTouch = 0;
@@ -246,8 +260,9 @@
   function down(e) {
     // ignore the phantom mouse event a touchscreen fires just after a real tap
     if (e.type === 'mousedown' && Date.now() - lastTouch < 700) return;
-    spin.classList.add('done');   // the arrow goes the instant you touch the card
+    spin.classList.add('done');   // the ring goes the instant you touch the card
     hint.classList.add('done');
+    nudger.classList.add('stop'); // and the card stops demonstrating once you take over
     dragging = true; moved = 0;
     startX = (e.touches ? e.touches[0].clientX : e.clientX);
     startRot = rot;
