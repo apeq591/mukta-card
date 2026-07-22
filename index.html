@@ -60,8 +60,10 @@
     color:rgba(244,244,242,.34); }
 
   .hint { margin-top:26px; font-family:'Space Mono', monospace; font-size:11.5px;
-    letter-spacing:.08em; color:var(--mute); text-align:center; }
+    letter-spacing:.08em; color:var(--mute); text-align:center;
+    transition:opacity .6s ease; }
   .hint b { color:var(--accent); font-weight:700; }
+  .hint.done { opacity:0; }
 
   /* Full-screen QR so she can show just the code */
   .qr-full { display:none; position:fixed; inset:0; z-index:50; background:var(--bg); cursor:pointer;
@@ -149,7 +151,7 @@
     </div>
   </div>
 
-  <p class="hint noprint"><b>drag</b> to spin &nbsp;//&nbsp; <b>tap</b> to flip</p>
+  <p class="hint noprint" id="hint"><b>tap</b> or <b>drag</b> to turn the card</p>
 
   <div id="qrFull" class="qr-full noprint">
     <div class="qr-big"><img src="assets/qr-card.png" alt="QR code to Mukta Dhandge's card" /></div>
@@ -161,6 +163,7 @@
   var card = document.getElementById('card3d');
   var qrBtn = document.getElementById('qrBtn');
   var qrFull = document.getElementById('qrFull');
+  var hint = document.getElementById('hint');
 
   var rot = 0;          // current rotation in degrees
   var startX = 0, startRot = 0, dragging = false, moved = 0;
@@ -185,9 +188,10 @@
     if (!dragging) return;
     dragging = false;
     card.classList.remove('dragging');
-    if (moved < 6) { rot += 180; }                    // a tap = flip
-    else { rot = Math.round(rot / 180) * 180; }       // a drag = settle on the nearest face
+    if (moved < 6) { rot += 180; }                    // a tap turns it one half-turn
+    else { rot = Math.round(rot / 180) * 180; }       // a drag settles on the nearest face
     apply();
+    hint.classList.add('done');                       // once you know, the label goes away
   }
 
   card.addEventListener('mousedown', down);
