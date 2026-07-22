@@ -65,18 +65,14 @@
   .hint b { color:var(--accent); font-weight:700; }
   .hint.done { opacity:0; }
 
-  /* 360 badge — the Amazon-style "this thing turns" cue */
-  .spin360 { position:absolute; left:14px; bottom:12px; display:flex; align-items:center; gap:6px;
-    padding:5px 9px 5px 6px; border-radius:999px; background:rgba(244,244,242,.06);
-    border:1px solid var(--line); pointer-events:none; transition:opacity .5s ease; }
-  .spin360 svg { width:15px; height:15px; display:block; animation:nudge 2.6s ease-in-out infinite; }
-  .spin360 span { font-family:'Space Mono', monospace; font-size:9.5px; letter-spacing:.12em;
-    color:rgba(244,244,242,.62); }
+  /* Large, thin, grey turn cue — sits above the card */
+  .spin360 { margin-bottom:26px; pointer-events:none; transition:opacity .5s ease; }
+  .spin360 svg { width:58px; height:58px; display:block;
+    animation:turnloop 5s cubic-bezier(.45,.05,.35,1) infinite; }
   .spin360.done { opacity:0; }
-  @keyframes nudge {
-    0%,62%,100% { transform:rotate(0deg); }
-    76%         { transform:rotate(-38deg); }
-    90%         { transform:rotate(14deg); }
+  @keyframes turnloop {
+    0%, 18%   { transform:rotate(0deg); }
+    72%, 100% { transform:rotate(360deg); }
   }
   @media (prefers-reduced-motion:reduce){ .spin360 svg { animation:none; } }
 
@@ -103,6 +99,16 @@
 </style>
 </head>
 <body>
+  <!-- large thin grey turn cue, above the card; fades once the card has been turned -->
+  <div class="spin360 noprint" id="spin360">
+    <svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
+      <path d="M41 24a17 17 0 1 1-5.4-12.4" stroke="rgba(244,244,242,.34)" stroke-width="1.5"
+            stroke-linecap="round"/>
+      <path d="M41.2 6.5v9.2h-9.2" stroke="rgba(244,244,242,.34)" stroke-width="1.5"
+            stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+
   <div class="scene">
     <div class="card3d" id="card3d">
 
@@ -139,16 +145,6 @@
           <p class="scan"><b>SCAN</b> // my card</p>
         </div>
 
-        <!-- turn cue: circular arrow + 360, fades once the card has been turned -->
-        <div class="spin360 noprint" id="spin360">
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M20.5 12a8.5 8.5 0 1 1-2.7-6.2" stroke="#FF6A2C" stroke-width="2.2"
-                  stroke-linecap="round"/>
-            <path d="M20.6 3.6v4.6h-4.6" stroke="#FF6A2C" stroke-width="2.2"
-                  stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <span>360</span>
-        </div>
       </div>
 
       <!-- BACK -->
