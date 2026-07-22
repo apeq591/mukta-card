@@ -65,17 +65,18 @@
   .hint b { color:var(--accent); font-weight:700; }
   .hint.done { opacity:0; }
 
-  /* Turn cue: a thin grey arc stretched the full width of the card, above it */
-  .spin360 { width:540px; margin-bottom:14px; pointer-events:none; transition:opacity .5s ease; }
-  .spin360 svg { width:100%; height:auto; display:block; }
-  .spin360 .sweep { stroke-dasharray:130 620; animation:sweep 3.6s ease-in-out infinite; }
+  /* Turn cue: one giant thin grey arrow, drifting right — the way you push the card */
+  .spin360 { width:420px; margin-bottom:20px; pointer-events:none; transition:opacity .35s ease; }
+  .spin360 svg { width:100%; height:auto; display:block;
+    animation:drift 2.4s cubic-bezier(.42,0,.3,1) infinite; }
   .spin360.done { opacity:0; }
-  @keyframes sweep {
-    0%   { stroke-dashoffset:190; }
-    100% { stroke-dashoffset:-560; }
+  @keyframes drift {
+    0%   { transform:translateX(-34px); opacity:.15; }
+    45%  { opacity:.62; }
+    100% { transform:translateX(34px);  opacity:.05; }
   }
-  @media (prefers-reduced-motion:reduce){ .spin360 .sweep { animation:none; opacity:0; } }
-  @media (max-width:580px){ .spin360 { width:454px; } }
+  @media (prefers-reduced-motion:reduce){ .spin360 svg { animation:none; opacity:.4; } }
+  @media (max-width:580px){ .spin360 { width:360px; } }
 
   /* Full-screen QR so she can show just the code */
   .qr-full { display:none; position:fixed; inset:0; z-index:50; background:var(--bg); cursor:pointer;
@@ -100,19 +101,11 @@
 </style>
 </head>
 <body>
-  <!-- turn cue: thin grey arc spanning the card's full width; fades after the first turn -->
+  <!-- turn cue: giant arrow pointing the way to push; vanishes the moment you touch the card -->
   <div class="spin360 noprint" id="spin360">
-    <svg viewBox="0 0 540 46" fill="none" aria-hidden="true">
-      <!-- the arc itself, edge to edge -->
-      <path id="arcTrack" d="M16 38 C160 4, 380 4, 524 38"
-            stroke="rgba(244,244,242,.13)" stroke-width="1.5" stroke-linecap="round"/>
-      <!-- a light travelling along it, showing the direction of turn -->
-      <path class="sweep" d="M16 38 C160 4, 380 4, 524 38"
-            stroke="rgba(244,244,242,.42)" stroke-width="1.5" stroke-linecap="round"/>
-      <!-- arrowheads both ends: it turns either way -->
-      <path d="M25 29.5 L15.5 38.2 L27 43" stroke="rgba(244,244,242,.34)" stroke-width="1.5"
-            stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M515 29.5 L524.5 38.2 L513 43" stroke="rgba(244,244,242,.34)" stroke-width="1.5"
+    <svg viewBox="0 0 420 76" fill="none" aria-hidden="true">
+      <path d="M10 38 H372" stroke="#F4F4F2" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M338 10 L392 38 L338 66" stroke="#F4F4F2" stroke-width="2.5"
             stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
   </div>
@@ -204,6 +197,8 @@
   function down(e) {
     // ignore the phantom mouse event a touchscreen fires just after a real tap
     if (e.type === 'mousedown' && Date.now() - lastTouch < 700) return;
+    spin.classList.add('done');   // the arrow goes the instant you touch the card
+    hint.classList.add('done');
     dragging = true; moved = 0;
     startX = (e.touches ? e.touches[0].clientX : e.clientX);
     startRot = rot;
@@ -224,8 +219,6 @@
     if (moved < 6) { rot += 180; }                    // a tap turns it one half-turn
     else { rot = Math.round(rot / 180) * 180; }       // a drag settles on the nearest face
     apply();
-    hint.classList.add('done');                       // once you know, the label goes away
-    spin.classList.add('done');
   }
 
   card.addEventListener('mousedown', down);
