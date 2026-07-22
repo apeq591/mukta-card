@@ -88,12 +88,12 @@
     from { stroke-dashoffset:0; }
     to   { stroke-dashoffset:var(--len); }
   }
-  /* the chevron lifts as the light reaches it — the light arrives at ~75% of each lap */
+  /* the chevron lifts as the light reaches it — now at the very end of the open path */
   .ring .head  { stroke:rgba(244,244,242,.42); animation:passing 3.2s linear infinite; }
   @keyframes passing {
-    0%, 62%  { stroke:rgba(244,244,242,.32); }
-    76%      { stroke:rgba(244,244,242,.88); }
-    92%, 100%{ stroke:rgba(244,244,242,.32); }
+    0%, 80%  { stroke:rgba(244,244,242,.34); }
+    96%      { stroke:rgba(244,244,242,.9); }
+    100%     { stroke:rgba(244,244,242,.34); }
   }
   .ring.done { opacity:0; }
   @media (prefers-reduced-motion:reduce){
@@ -146,11 +146,14 @@
         </radialGradient>
       </defs>
       <ellipse class="floor" cx="320" cy="60" rx="300" ry="44"/>
-      <ellipse class="track" cx="320" cy="60" rx="300" ry="44" stroke-width="1.5"/>
-      <ellipse class="comet" cx="320" cy="60" rx="300" ry="44" stroke-width="1.5"
-               stroke-linecap="round"/>
-      <!-- chevron on the near edge, pointing the way the front of the card travels -->
-      <path class="head" d="M302 114 L320 104 L302 94" stroke-width="1.5"
+      <!-- open ring: 326° of the ellipse, leaving a gap on the near edge right of centre.
+           Drawn counter-clockwise (the direction of travel), ending where the chevron sits. -->
+      <path class="track" d="M568.7 84.6 A300 44 0 1 0 432.4 100.8"
+            stroke-width="1.5" stroke-linecap="round"/>
+      <path class="comet" d="M568.7 84.6 A300 44 0 1 0 432.4 100.8"
+            stroke-width="1.5" stroke-linecap="round"/>
+      <!-- chevron closing the near edge, aimed along the tangent across the gap -->
+      <path class="head" d="M413 111 L432.4 100.8 L411.9 93" stroke-width="1.5"
             stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
   </div>
@@ -287,7 +290,8 @@
     var L = comet.getTotalLength();
     comet.style.setProperty('--seg', (L * 0.13).toFixed(1));
     comet.style.setProperty('--gap', (L * 0.87).toFixed(1));
-    comet.style.setProperty('--len', L.toFixed(1));   // sign sets the direction of travel
+    // negative: the path is drawn in the direction of travel, so the dash runs forward
+    comet.style.setProperty('--len', (-L).toFixed(1));
   }
 
   // QR opens fullscreen instead of flipping the card
