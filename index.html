@@ -68,18 +68,30 @@
   /* Turn cue: a giant arrow that SWINGS around a circle — the motion of turning the card.
      The arc bows inward (toward the card) and the whole group rotates about the circle's
      centre at (210,-60), so the arrow actually travels along its own curve. */
+  /* Turn cue: a fixed ∪ arc the width of the card, with a bright segment travelling ALONG
+     the curve, left to right — motion that follows the circle instead of sliding across it.
+     The arc itself never moves, so the composition stays put. Path length ≈ 426. */
   .spin360 { width:540px; margin-bottom:14px; pointer-events:none; transition:opacity .35s ease; }
-  .spin360 svg { width:100%; height:auto; display:block; overflow:visible; }
-  .spin360 g { transform-box:view-box; transform-origin:210px -167.5px;
-    animation:swing 2.8s cubic-bezier(.35,0,.3,1) infinite; }
+  .spin360 svg { width:100%; height:auto; display:block; }
+  .spin360 .track { stroke:rgba(244,244,242,.12); }
+  .spin360 .comet { stroke:rgba(244,244,242,.62); stroke-dasharray:96 460;
+    animation:travel 2.6s cubic-bezier(.4,0,.35,1) infinite; }
+  .spin360 .head  { stroke:rgba(244,244,242,.20);
+    animation:arrive 2.6s cubic-bezier(.4,0,.35,1) infinite; }
   .spin360.done { opacity:0; }
-  @keyframes swing {
-    0%   { transform:rotate(-15deg); opacity:0; }
-    22%  { opacity:.55; }
-    70%  { opacity:.48; }
-    100% { transform:rotate(15deg);  opacity:0; }
+  @keyframes travel {                 /* the path runs left→right, so offset counts down */
+    0%   { stroke-dashoffset:96; }
+    100% { stroke-dashoffset:-426; }
   }
-  @media (prefers-reduced-motion:reduce){ .spin360 g { animation:none; opacity:.45; } }
+  @keyframes arrive {                 /* head lights up as the segment reaches it */
+    0%, 55% { stroke:rgba(244,244,242,.18); }
+    82%     { stroke:rgba(244,244,242,.72); }
+    100%    { stroke:rgba(244,244,242,.18); }
+  }
+  @media (prefers-reduced-motion:reduce){
+    .spin360 .comet, .spin360 .head { animation:none; }
+    .spin360 .comet { stroke-dasharray:none; stroke:rgba(244,244,242,.4); }
+  }
   @media (max-width:580px){ .spin360 { width:454px; } }
 
   /* Full-screen QR so she can show just the code */
@@ -108,15 +120,13 @@
   <!-- turn cue: giant arrow pointing the way to push; vanishes the moment you touch the card -->
   <div class="spin360 noprint" id="spin360">
     <svg viewBox="0 0 420 104" fill="none" aria-hidden="true">
-      <g>
-        <!-- arc of a circle centred at (210,-167.5), r=260 — bows inward, toward the card,
-             and spans the card's full width -->
-        <path d="M20 10 A260 260 0 0 0 400 10" stroke="#F4F4F2" stroke-width="2.5"
-              stroke-linecap="round"/>
-        <!-- head on the leading end, aimed along the circle's tangent -->
-        <path d="M387 44.5 L400 10 L366.6 25.3" stroke="#F4F4F2" stroke-width="2.5"
-              stroke-linecap="round" stroke-linejoin="round"/>
-      </g>
+      <!-- the curve: an arc of a circle centred at (210,-167.5), r=260, bowing inward -->
+      <path class="track" d="M20 10 A260 260 0 0 0 400 10" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- light travelling along that same curve, left to right -->
+      <path class="comet" d="M20 10 A260 260 0 0 0 400 10" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- head at the far end, aimed along the circle's tangent -->
+      <path class="head" d="M387 44.5 L400 10 L366.6 25.3" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
   </div>
 
