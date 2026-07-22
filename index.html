@@ -11,46 +11,57 @@
   :root {
     --bg:#0A0B0D; --card1:#17191E; --card2:#0F1115;
     --ink:#F4F4F2; --mute:rgba(244,244,242,.52); --line:rgba(244,244,242,.10);
-    --accent:#FF6A2C;
+    --accent:#FF6A2C; --qr:#E8E7E3;
   }
   * { box-sizing:border-box; margin:0; padding:0; }
   body { font-family:'Space Grotesk', system-ui, sans-serif; color:var(--ink); background:var(--bg);
-    min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:28px 16px; }
+    min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:28px 16px; overflow-x:hidden; }
 
-  .hint { max-width:400px; text-align:center; color:var(--mute); font-size:13px; margin-bottom:24px; line-height:1.55;
-    font-family:'Space Mono', monospace; }
+  /* ---- 3D stage ---- */
+  .scene { perspective:1600px; }
+  .card3d { position:relative; width:540px; height:340px; transform-style:preserve-3d;
+    transform:rotateY(0deg); transition:transform .75s cubic-bezier(.22,.85,.25,1);
+    cursor:grab; touch-action:pan-y; }
+  .card3d.dragging { transition:none; cursor:grabbing; }
+  .face { position:absolute; inset:0; border-radius:16px; overflow:hidden;
+    -webkit-backface-visibility:hidden; backface-visibility:hidden;
+    border:1px solid var(--line); box-shadow:0 30px 70px -30px rgba(0,0,0,.8);
+    background:linear-gradient(158deg, var(--card1) 0%, var(--card2) 100%); }
+  .front { display:flex; }
+  .back { transform:rotateY(180deg); display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:22px; }
 
-  /* Business-card ratio (85.6 x 53.98 mm) */
-  .card { width:540px; height:340px; border-radius:16px; overflow:hidden; display:flex;
-    background:linear-gradient(158deg, var(--card1) 0%, var(--card2) 100%);
-    border:1px solid var(--line); box-shadow:0 30px 70px -30px rgba(0,0,0,.8); }
-
-  .left { flex:1; padding:32px 30px; display:flex; flex-direction:column; }
+  /* ---- front ---- */
+  .left { flex:1; padding:32px 30px; display:flex; flex-direction:column; justify-content:center; }
   .kick { font-family:'Space Mono', monospace; font-size:11px; letter-spacing:.2em; color:var(--accent); }
   .name { font-weight:700; font-size:40px; line-height:1.0; letter-spacing:-.02em; margin-top:14px; }
-  .rule { width:42px; height:3px; background:var(--accent); border-radius:2px; margin:18px 0; }
-  .role { font-size:14.5px; line-height:1.5; color:rgba(244,244,242,.72); max-width:250px; margin-top:6px; }
-  .work { font-weight:600; font-size:19px; margin-top:9px; letter-spacing:-.01em; }
+  .rule { width:42px; height:3px; background:var(--accent); border-radius:2px; margin:18px 0 0; }
+  .work { font-weight:600; font-size:19px; margin-top:20px; letter-spacing:-.01em; }
   .work span { color:var(--accent); margin:0 8px; }
   .work em { font-style:normal; font-weight:400; font-size:13.5px; color:var(--mute); letter-spacing:0; margin-left:4px; }
-  .contact { margin-top:auto; font-family:'Space Mono', monospace; font-size:12.5px; line-height:1.7; }
+  .contact { margin-top:30px; font-family:'Space Mono', monospace; font-size:12.5px; line-height:1.7; }
   .contact .em { color:var(--ink); font-family:'Space Grotesk', sans-serif; font-size:14px; letter-spacing:.01em; }
   .contact .loc { color:var(--mute); }
 
-  .right { width:194px; padding:24px; border-left:1px solid var(--line);
+  .right { width:194px; padding:22px; border-left:1px solid var(--line);
     background:rgba(255,255,255,.015);
-    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:13px; }
-  .brand { width:118px; display:block; }
-  .qr { width:118px; height:118px; background:#fff; border-radius:10px; padding:8px; border:0; cursor:pointer; }
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:15px; }
+  .brand { width:138px; display:block; }
+  .qr { width:104px; height:104px; background:var(--qr); border-radius:9px; padding:7px; border:0;
+    cursor:pointer; opacity:.92; }
   .qr img { width:100%; height:100%; display:block; }
   .scan { font-family:'Space Mono', monospace; font-size:10.5px; letter-spacing:.06em; text-align:center; color:var(--mute); }
   .scan b { color:var(--accent); font-weight:700; }
-  .tap { font-family:'Space Mono', monospace; font-size:9.5px; color:var(--mute); opacity:.7; }
 
-  .print-btn { margin-top:26px; border:1px solid var(--line); cursor:pointer; border-radius:999px;
-    background:var(--accent); color:#0A0B0D; font-weight:700; font-size:14px; padding:12px 26px;
-    font-family:'Space Mono', monospace; letter-spacing:.04em; }
-  .print-btn:active { transform:translateY(1px); }
+  /* ---- back ---- */
+  .backlogo { width:300px; display:block; }
+  .backline { font-family:'Space Mono', monospace; font-size:10.5px; letter-spacing:.22em;
+    color:rgba(244,244,242,.34); }
+
+  .hint { margin-top:26px; font-family:'Space Mono', monospace; font-size:11.5px;
+    letter-spacing:.08em; color:var(--mute); text-align:center; }
+  .hint b { color:var(--accent); font-weight:700; }
 
   /* Full-screen QR so she can show just the code */
   .qr-full { display:none; position:fixed; inset:0; z-index:50; background:var(--bg); cursor:pointer;
@@ -60,55 +71,138 @@
   .qr-cap { font-family:'Space Mono', monospace; text-align:center; color:var(--ink); font-size:15px; line-height:1.8; }
   .qr-cap span { color:var(--mute); font-size:12px; }
 
-  @media (max-width:580px){ .card{ transform:scale(.84); } }
+  @media (max-width:580px){ .scene{ transform:scale(.84); } }
+  @media (prefers-reduced-motion:reduce){ .card3d{ transition:none; } }
 
   @page { size:86mm 54mm; margin:0; }
   @media print {
     body { background:#fff; padding:0; display:block; }
-    .noprint { display:none !important; }
-    .card { width:86mm; height:54mm; border-radius:0; box-shadow:none; border:none; }
+    .noprint, .back { display:none !important; }
+    .scene { perspective:none; }
+    .card3d { width:86mm; height:54mm; transform:none !important; transition:none; }
+    .face { border-radius:0; box-shadow:none; border:none; position:static; }
     .qr { cursor:default; }
   }
 </style>
 </head>
 <body>
-  <div class="card">
-    <div class="left">
-      <span class="kick">INVENTOR</span>
-      <h1 class="name">Mukta Dhandge</h1>
-      <div class="rule"></div>
-      <div class="work">ResQify <span>/</span> MediQ <em>&middot; Patents pending</em></div>
-      <div class="contact">
-        <div class="em">mukta.dhandge@icloud.com</div>
-        <div class="loc">Glasgow, UK</div>
+  <div class="scene">
+    <div class="card3d" id="card3d">
+
+      <!-- FRONT -->
+      <div class="face front">
+        <div class="left">
+          <span class="kick">INVENTOR</span>
+          <h1 class="name">Mukta Dhandge</h1>
+          <div class="rule"></div>
+          <div class="work">ResQify <span>/</span> MediQ <em>&middot; Patents pending</em></div>
+          <div class="contact">
+            <div class="em">mukta.dhandge@icloud.com</div>
+            <div class="loc">Glasgow, UK</div>
+          </div>
+        </div>
+        <div class="right">
+          <!-- ApeQ logo, dark version. Descriptor dropped at this size (min-size rule). -->
+          <svg class="brand" viewBox="0 0 330 192" role="img" aria-label="ApeQ">
+            <defs>
+              <clipPath id="cardPeak" clipPathUnits="userSpaceOnUse">
+                <path clip-rule="evenodd" d="M60 0 L120 130 H90 L60 62 L30 130 H0 Z M60 78 L78 116 H42 Z"/>
+              </clipPath>
+            </defs>
+            <g transform="translate(105,8)" clip-path="url(#cardPeak)">
+              <rect x="0" y="0" width="130" height="46" fill="#FF6A2C"/>
+              <rect x="0" y="46" width="130" height="110" fill="#F4F4F2"/>
+            </g>
+            <text x="165" y="182" font-size="38" font-weight="700" letter-spacing="9" fill="#F4F4F2"
+                  text-anchor="middle" font-family="'Space Grotesk', Helvetica, Arial, sans-serif">APEQ</text>
+          </svg>
+          <button class="qr" id="qrBtn" aria-label="Enlarge QR code">
+            <img src="assets/qr-card.png" alt="QR code to Mukta Dhandge's card" />
+          </button>
+          <p class="scan"><b>SCAN</b> // my card</p>
+        </div>
       </div>
-    </div>
-    <div class="right">
-      <!-- ApeQ logo, dark/reversed version (apeq-logo/apeq-dark.svg), descriptor dropped at card size -->
-      <svg class="brand" viewBox="0 0 330 192" role="img" aria-label="ApeQ">
-        <defs>
-          <clipPath id="cardPeak" clipPathUnits="userSpaceOnUse">
-            <path clip-rule="evenodd" d="M60 0 L120 130 H90 L60 62 L30 130 H0 Z M60 78 L78 116 H42 Z"/>
-          </clipPath>
-        </defs>
-        <g transform="translate(105,8)" clip-path="url(#cardPeak)">
-          <rect x="0" y="0" width="130" height="46" fill="#FF6A2C"/>
-          <rect x="0" y="46" width="130" height="110" fill="#F4F4F2"/>
-        </g>
-        <text x="165" y="182" font-size="38" font-weight="700" letter-spacing="9" fill="#F4F4F2"
-              text-anchor="middle" font-family="'Space Grotesk', Helvetica, Arial, sans-serif">APEQ</text>
-      </svg>
-      <button class="qr" onclick="document.getElementById('qrFull').style.display='flex'" aria-label="Enlarge QR code">
-        <img src="assets/qr-card.png" alt="QR code to Mukta Dhandge's card" />
-      </button>
-      <p class="scan"><b>SCAN</b> // my card</p>
-      <p class="tap noprint">tap to show big</p>
+
+      <!-- BACK -->
+      <div class="face back">
+        <!-- full logo: big enough here for the hairlines + descriptor to read -->
+        <svg class="backlogo" viewBox="0 0 330 215" role="img" aria-label="ApeQ Inventions">
+          <defs>
+            <clipPath id="backPeak" clipPathUnits="userSpaceOnUse">
+              <path clip-rule="evenodd" d="M60 0 L120 130 H90 L60 62 L30 130 H0 Z M60 78 L78 116 H42 Z"/>
+            </clipPath>
+          </defs>
+          <g transform="translate(105,8)" clip-path="url(#backPeak)">
+            <rect x="0" y="0" width="130" height="46" fill="#FF6A2C"/>
+            <rect x="0" y="46" width="130" height="110" fill="#F4F4F2"/>
+          </g>
+          <text x="165" y="180" font-size="38" font-weight="700" letter-spacing="9" fill="#F4F4F2"
+                text-anchor="middle" font-family="'Space Grotesk', Helvetica, Arial, sans-serif">APEQ</text>
+          <path d="M18 195 L68 195" stroke="#FF6A2C" stroke-width="2"/>
+          <path d="M262 195 L312 195" stroke="#FF6A2C" stroke-width="2"/>
+          <text x="165" y="199" font-size="10.5" letter-spacing="6" fill="rgba(244,244,242,.55)"
+                text-anchor="middle" font-family="'Space Grotesk', Helvetica, Arial, sans-serif">INVENTIONS</text>
+        </svg>
+        <p class="backline">GLASGOW &middot; UK</p>
+      </div>
+
     </div>
   </div>
 
-  <div id="qrFull" class="qr-full noprint" onclick="this.style.display='none'">
+  <p class="hint noprint"><b>drag</b> to spin &nbsp;//&nbsp; <b>tap</b> to flip</p>
+
+  <div id="qrFull" class="qr-full noprint">
     <div class="qr-big"><img src="assets/qr-card.png" alt="QR code to Mukta Dhandge's card" /></div>
     <p class="qr-cap">Mukta Dhandge<br /><span>tap anywhere to close</span></p>
   </div>
+
+<script>
+(function () {
+  var card = document.getElementById('card3d');
+  var qrBtn = document.getElementById('qrBtn');
+  var qrFull = document.getElementById('qrFull');
+
+  var rot = 0;          // current rotation in degrees
+  var startX = 0, startRot = 0, dragging = false, moved = 0;
+
+  function apply() { card.style.transform = 'rotateY(' + rot + 'deg)'; }
+
+  function down(e) {
+    dragging = true; moved = 0;
+    startX = (e.touches ? e.touches[0].clientX : e.clientX);
+    startRot = rot;
+    card.classList.add('dragging');
+  }
+  function move(e) {
+    if (!dragging) return;
+    var x = (e.touches ? e.touches[0].clientX : e.clientX);
+    var dx = x - startX;
+    moved = Math.max(moved, Math.abs(dx));
+    rot = startRot + dx * 0.55;
+    apply();
+  }
+  function up() {
+    if (!dragging) return;
+    dragging = false;
+    card.classList.remove('dragging');
+    if (moved < 6) { rot += 180; }                    // a tap = flip
+    else { rot = Math.round(rot / 180) * 180; }       // a drag = settle on the nearest face
+    apply();
+  }
+
+  card.addEventListener('mousedown', down);
+  window.addEventListener('mousemove', move);
+  window.addEventListener('mouseup', up);
+  card.addEventListener('touchstart', down, { passive: true });
+  card.addEventListener('touchmove', move, { passive: true });
+  card.addEventListener('touchend', up);
+
+  // QR opens fullscreen instead of flipping the card
+  qrBtn.addEventListener('click', function (e) { e.stopPropagation(); qrFull.style.display = 'flex'; });
+  qrBtn.addEventListener('mousedown', function (e) { e.stopPropagation(); });
+  qrBtn.addEventListener('touchstart', function (e) { e.stopPropagation(); }, { passive: true });
+  qrFull.addEventListener('click', function () { qrFull.style.display = 'none'; });
+})();
+</script>
 </body>
 </html>
