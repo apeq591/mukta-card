@@ -77,15 +77,24 @@
   .ring { position:absolute; z-index:1; left:50%; margin-left:-320px; top:calc(100% - 60px);
     width:640px; pointer-events:none; transition:opacity .4s ease; }
   .ring svg { width:100%; height:auto; display:block; overflow:visible; }
-  .ring .track { stroke:rgba(244,244,242,.13); }
+  /* Depth: the far side of the ring is further away, so it sits back. A flat, evenly-lit
+     ring is the thing that reads as a drawing rather than an object. */
+  .ring .track { stroke:url(#depth); }
+  .ring .floor { fill:url(#floor); }
   /* --len is set from the real measured path length at load, so the lap is seamless */
-  .ring .comet { stroke:rgba(244,244,242,.62); stroke-dasharray:var(--seg) var(--gap);
+  .ring .comet { stroke:url(#cometDepth); stroke-dasharray:var(--seg) var(--gap);
     animation:orbit 3.2s linear infinite; }
   @keyframes orbit {
     from { stroke-dashoffset:0; }
     to   { stroke-dashoffset:var(--len); }
   }
-  .ring .head  { stroke:rgba(244,244,242,.42); }
+  /* the chevron lifts as the light reaches it — the light arrives at ~75% of each lap */
+  .ring .head  { stroke:rgba(244,244,242,.42); animation:passing 3.2s linear infinite; }
+  @keyframes passing {
+    0%, 62%  { stroke:rgba(244,244,242,.32); }
+    76%      { stroke:rgba(244,244,242,.88); }
+    92%, 100%{ stroke:rgba(244,244,242,.32); }
+  }
   .ring.done { opacity:0; }
   @media (prefers-reduced-motion:reduce){
     .ring .comet { animation:none; stroke-dasharray:none; stroke:rgba(244,244,242,.34); }
@@ -120,6 +129,23 @@
   <!-- turn cue: the turntable ring the card stands on. Its far half sits behind the card. -->
   <div class="ring noprint" id="spin360">
     <svg viewBox="0 0 640 120" fill="none" aria-hidden="true">
+      <defs>
+        <!-- far edge (top) sits back, near edge (bottom) comes forward -->
+        <linearGradient id="depth" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#F4F4F2" stop-opacity=".05"/>
+          <stop offset="1" stop-color="#F4F4F2" stop-opacity=".24"/>
+        </linearGradient>
+        <linearGradient id="cometDepth" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#F4F4F2" stop-opacity=".16"/>
+          <stop offset="1" stop-color="#F4F4F2" stop-opacity=".82"/>
+        </linearGradient>
+        <!-- barely-there surface, so the ring encloses a floor rather than empty space -->
+        <radialGradient id="floor" cx="50%" cy="50%" r="50%">
+          <stop offset="0" stop-color="#F4F4F2" stop-opacity=".035"/>
+          <stop offset="1" stop-color="#F4F4F2" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <ellipse class="floor" cx="320" cy="60" rx="300" ry="44"/>
       <ellipse class="track" cx="320" cy="60" rx="300" ry="44" stroke-width="1.5"/>
       <ellipse class="comet" cx="320" cy="60" rx="300" ry="44" stroke-width="1.5"
                stroke-linecap="round"/>
