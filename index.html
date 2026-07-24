@@ -75,7 +75,11 @@
   /* Turn cue: a turntable the card stands on. The ring's far half is hidden behind the card,
      so it reads as a real ring in 3D rather than a diagram floating nearby. A light laps it;
      at the near edge it travels right — the way you drag. Path length measured at runtime. */
-  .stage { position:relative; display:flex; flex-direction:column; align-items:center; }
+  /* --z (set in JS from viewport width) shrinks the whole card + ring as one unit on phones,
+     while iPad and up stay at full size. zoom (not transform:scale) so layout shrinks too and
+     the ring stays glued under the card and the hint follows below. */
+  .stage { position:relative; display:flex; flex-direction:column; align-items:center;
+    zoom:var(--z, 1); }
   .scene { position:relative; z-index:2; }
   /* On load the card turns itself a little, four times, then stops for good. Nothing
      communicates "this is a 3D thing you can move" like seeing it move. The turntable ring
@@ -113,7 +117,6 @@
   @media (prefers-reduced-motion:reduce){
     .ring .comet { animation:none; stroke-dasharray:none; stroke:rgba(244,244,242,.34); }
   }
-  @media (max-width:580px){ .ring { width:540px; margin-left:-270px; } }
 
   /* Full-screen QR so she can show just the code */
   .qr-full { display:none; position:fixed; inset:0; z-index:50; background:var(--bg); cursor:pointer;
@@ -123,12 +126,12 @@
   .qr-cap { font-family:'Space Mono', monospace; text-align:center; color:var(--ink); font-size:15px; line-height:1.8; }
   .qr-cap span { color:var(--mute); font-size:12px; }
 
-  @media (max-width:580px){ .scene{ transform:scale(.84); } }
   @media (prefers-reduced-motion:reduce){ .card3d{ transition:none; } }
 
   @page { size:86mm 54mm; margin:0; }
   @media print {
     body { background:#fff; padding:0; display:block; }
+    .stage { zoom:1; }
     .noprint, .back { display:none !important; }
     .scene { perspective:none; }
     .card3d { width:86mm; height:54mm; transform:none !important; transition:none; }
@@ -254,6 +257,17 @@
   var hint = document.getElementById('hint');
   var spin = document.getElementById('spin360');
   var nudger = document.getElementById('nudger');
+  var stage = document.querySelector('.stage');
+
+  // Fit the whole card + ring to the screen. Full size (--z:1) on iPad and up; on a phone,
+  // scale down so the 540px-wide card fits with ~20px of breathing room each side.
+  function fit() {
+    var vw = document.documentElement.clientWidth;
+    var z = Math.min(1, (vw - 40) / 540);
+    stage.style.setProperty('--z', z.toFixed(3));
+  }
+  fit();
+  window.addEventListener('resize', fit);
 
   var rot = 0;          // current rotation in degrees
   var startX = 0, startRot = 0, dragging = false, moved = 0, lastTouch = 0;
